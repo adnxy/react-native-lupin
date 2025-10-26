@@ -1,4 +1,4 @@
-# 🔒 Lupin Security Scanner
+#  React Native Lupin - Security Scanner
 
 **Fast, beautiful security scanner for React Native and Expo bundles.**
 

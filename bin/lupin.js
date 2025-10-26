@@ -1021,7 +1021,7 @@ function formatTable(findings) {
   for (const f of findings) {
     const sevColor =
       f.severity === 'critical'
-        ? chalk.bgRed.white
+        ? chalk.bold.magenta
         : f.severity === 'high'
         ? chalk.red
         : f.severity === 'medium'
@@ -1154,14 +1154,14 @@ const opts = program.opts();
       bundlesToScan = [path.resolve(opts.bundle)];
     } else {
       // Auto-discovery mode
-      console.log(chalk.bold.cyan(`
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║                   🔒 LUPIN - Bundle Security Scanner                          ║
-║                   React Native & Expo Security Auditor                        ║
-║                                                                               ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-`));
+      console.log(`
+${chalk.bold.cyan('╔═══════════════════════════════════════════════════════════════════════════════╗')}
+${chalk.bold.cyan('║')}${' '.repeat(79)}${chalk.bold.cyan('║')}
+${chalk.bold.cyan('║')}          ${chalk.bold.magenta('🔒 LUPIN')} ${chalk.bold.white('━')} ${chalk.bold.cyan('Bundle Security Scanner')}                     ${chalk.bold.cyan('║')}
+${chalk.bold.cyan('║')}          ${chalk.gray('React Native & Expo Security Auditor')}                      ${chalk.bold.cyan('║')}
+${chalk.bold.cyan('║')}${' '.repeat(79)}${chalk.bold.cyan('║')}
+${chalk.bold.cyan('╚═══════════════════════════════════════════════════════════════════════════════╝')}
+`);
 
       // Detect or use specified project type
       let projectType = opts.type?.toLowerCase();
@@ -1194,16 +1194,17 @@ const opts = program.opts();
         process.exit(1);
       }
 
-      console.log(chalk.green.bold(`✓ Found ${foundBundles.length} bundle file(s):\n`));
-      console.log(chalk.gray(`  ┌${'─'.repeat(76)}┐`));
+      console.log(chalk.green(`  ✨ Found ${chalk.bold.white(foundBundles.length)} bundle file(s)\n`));
+      console.log(chalk.gray(`  ╭${'─'.repeat(76)}╮`));
       foundBundles.forEach((b, i) => {
         const size = Math.round(fs.statSync(b).size / 1024);
         const relativePath = path.relative(process.cwd(), b);
         const displayPath = relativePath.length > 60 ? '...' + relativePath.slice(-57) : relativePath;
         const sizeStr = `${size.toLocaleString()} KB`;
-        console.log(chalk.gray(`  │ `) + chalk.white(`${i + 1}. `) + chalk.cyan(displayPath.padEnd(62)) + chalk.yellow(sizeStr.padStart(8)) + chalk.gray(` │`));
+        const numberColor = i === 0 ? chalk.cyan : chalk.gray;
+        console.log(chalk.gray(`  │ `) + numberColor(`${i + 1}. `) + chalk.white(displayPath.padEnd(62)) + chalk.cyan(sizeStr.padStart(8)) + chalk.gray(` │`));
       });
-      console.log(chalk.gray(`  └${'─'.repeat(76)}┘`));
+      console.log(chalk.gray(`  ╰${'─'.repeat(76)}╯`));
 
       // Determine which bundles to scan
       if (opts.scanAll || foundBundles.length === 1) {
@@ -1247,7 +1248,8 @@ const opts = program.opts();
       };
 
       // Scanning animation
-      console.log(chalk.cyan('\n  🔍 Running security scan...\n'));
+      console.log(chalk.cyan('\n  🔍 Running security scan'));
+      console.log(chalk.gray(`  ${'━'.repeat(40)}\n`));
       
       const findingsRaw = [];
       let criticalCount = 0;
@@ -1261,9 +1263,13 @@ const opts = program.opts();
         const progress = Math.round(((i + 1) / RULES.length) * 100);
         const barLength = 30;
         const filled = Math.round((progress / 100) * barLength);
-        const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
+        const empty = barLength - filled;
         
-        process.stdout.write(`\r  ${bar} ${progress}% | Checking: ${rule.title.padEnd(35).slice(0, 35)}`);
+        // Gradient progress bar
+        const barColor = progress < 33 ? chalk.cyan : progress < 66 ? chalk.blue : chalk.green;
+        const bar = barColor('█'.repeat(filled)) + chalk.gray('░'.repeat(empty));
+        
+        process.stdout.write(`\r  ${bar} ${chalk.bold.white(progress + '%')} ${chalk.gray('│')} ${chalk.gray(rule.title.padEnd(35).slice(0, 35))}`);
         
         const res = rule.run(code).map((f) => ({
           id: rule.id,
@@ -1276,12 +1282,13 @@ const opts = program.opts();
         if (res.length > 0) {
           process.stdout.write('\r' + ' '.repeat(80) + '\r'); // Clear line
           const severityColor = 
-            rule.severity === 'critical' ? chalk.bgRed.white :
+            rule.severity === 'critical' ? chalk.bold.magenta :
             rule.severity === 'high' ? chalk.red :
             rule.severity === 'medium' ? chalk.yellow :
             chalk.gray;
           
-          console.log(`  ${severityColor('●')} Found ${res.length} ${severityColor(rule.severity.toUpperCase())} issue(s): ${chalk.gray(rule.title)}`);
+          const icon = rule.severity === 'critical' ? '🔥' : rule.severity === 'high' ? '⚠️' : rule.severity === 'medium' ? '⚡' : '•';
+          console.log(`  ${icon} Found ${chalk.bold.white(res.length)} ${severityColor(rule.severity.toUpperCase())} ${chalk.gray('·')} ${chalk.white(rule.title)}`);
           
           // Count by severity
           if (rule.severity === 'critical') criticalCount += res.length;
@@ -1297,14 +1304,23 @@ const opts = program.opts();
       process.stdout.write('\r' + ' '.repeat(80) + '\r');
       
       // Scan complete message - compact format
+      console.log('');
       if (criticalCount > 0) {
-        console.log(chalk.red(`\n  🚨 `) + chalk.bold.red(`${criticalCount} CRITICAL`) + chalk.red(` issue(s) detected`));
+        console.log(chalk.magenta(`  ┌${'─'.repeat(50)}┐`));
+        console.log(chalk.magenta(`  │`) + `  🚨  ${chalk.bold.magenta(`${criticalCount} CRITICAL`)} ${chalk.magenta('issue(s) detected')}`.padEnd(61) + chalk.magenta(`│`));
+        console.log(chalk.magenta(`  └${'─'.repeat(50)}┘`));
       } else if (highCount > 0) {
-        console.log(chalk.yellow(`\n  ⚠️  `) + chalk.bold.yellow(`${highCount} HIGH`) + chalk.yellow(` severity issue(s) detected`));
+        console.log(chalk.red(`  ┌${'─'.repeat(50)}┐`));
+        console.log(chalk.red(`  │`) + `  ⚠️   ${chalk.bold.red(`${highCount} HIGH`)} ${chalk.red('severity issue(s) detected')}`.padEnd(62) + chalk.red(`│`));
+        console.log(chalk.red(`  └${'─'.repeat(50)}┘`));
       } else if (mediumCount > 0) {
-        console.log(chalk.yellow(`\n  ⚠️  `) + chalk.bold.yellow(`${mediumCount} MEDIUM`) + chalk.yellow(` severity issue(s) detected`));
+        console.log(chalk.yellow(`  ┌${'─'.repeat(50)}┐`));
+        console.log(chalk.yellow(`  │`) + `  ⚡  ${chalk.bold.yellow(`${mediumCount} MEDIUM`)} ${chalk.yellow('issue(s) detected')}`.padEnd(62) + chalk.yellow(`│`));
+        console.log(chalk.yellow(`  └${'─'.repeat(50)}┘`));
       } else {
-        console.log(chalk.green.bold(`\n  ✨ Scan complete - no high-severity issues found`));
+        console.log(chalk.green(`  ┌${'─'.repeat(50)}┐`));
+        console.log(chalk.green(`  │`) + `  ✨  ${chalk.bold.green('Scan complete - no high-severity issues')}  `.padEnd(61) + chalk.green(`│`));
+        console.log(chalk.green(`  └${'─'.repeat(50)}┘`));
       }
 
       // Deduplicate near-identical matches
@@ -1325,18 +1341,18 @@ const opts = program.opts();
 
       // Console output
       if (bundlesToScan.length > 1) {
-        console.log(chalk.bold(`\n${'═'.repeat(90)}`));
+        console.log(chalk.bold.cyan(`\n${'═'.repeat(90)}`));
       }
       const fileName = path.basename(meta.file);
       const fileDir = path.relative(process.cwd(), path.dirname(meta.file));
-      console.log(chalk.bold(`\n  🔍 Scanning Bundle`));
-      console.log(chalk.gray(`  ┌${'─'.repeat(86)}┐`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`File:     `) + chalk.white(fileName.length > 66 ? fileName.slice(0, 63) + '...' : fileName.padEnd(66)) + chalk.gray(` │`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`Location: `) + chalk.white((fileDir || '.').padEnd(66)) + chalk.gray(` │`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`Size:     `) + chalk.white(`${Math.round(meta.sizeBytes / 1024).toLocaleString()} KB`.padEnd(66)) + chalk.gray(` │`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`Runtime:  `) + chalk.white(meta.runtimeHint.padEnd(66)) + chalk.gray(` │`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`Source:   `) + (meta.hasSourceMapURL ? chalk.yellow('SourceMap URL found') : chalk.gray('No source map')).padEnd(76) + chalk.gray(` │`));
-      console.log(chalk.gray(`  └${'─'.repeat(86)}┘`));
+      console.log(chalk.bold.cyan(`\n  📦 Bundle Analysis`));
+      console.log(chalk.gray(`  ╭${'─'.repeat(86)}╮`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`📄 File:     `) + chalk.white(fileName.length > 66 ? fileName.slice(0, 63) + '...' : fileName.padEnd(66)) + chalk.gray(` │`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`📁 Location: `) + chalk.gray((fileDir || '.').padEnd(66)) + chalk.gray(` │`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`💾 Size:     `) + chalk.yellow(`${Math.round(meta.sizeBytes / 1024).toLocaleString()} KB`.padEnd(66)) + chalk.gray(` │`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`⚙️  Runtime:  `) + chalk.white(meta.runtimeHint.padEnd(66)) + chalk.gray(` │`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`🗺️  Source:   `) + (meta.hasSourceMapURL ? chalk.green('✓ SourceMap URL found') : chalk.gray('✗ No source map')).padEnd(77) + chalk.gray(` │`));
+      console.log(chalk.gray(`  ╰${'─'.repeat(86)}╯`));
       console.log('');
 
       // Filter findings for display based on --show-level
@@ -1350,33 +1366,38 @@ const opts = program.opts();
       }, {});
       
       if (findings.length === 0) {
-        console.log(chalk.green.bold('  ✅ No security findings! Bundle looks clean.\n'));
+        console.log(chalk.green(`  ╭${'─'.repeat(50)}╮`));
+        console.log(chalk.green(`  │`) + chalk.green.bold(`  ✅  No security findings! Bundle looks clean.    `).padEnd(61) + chalk.green(`│`));
+        console.log(chalk.green(`  ╰${'─'.repeat(50)}╯\n`));
       } else {
-        console.log(chalk.bold(`  📊 Total Findings: ${findings.length}\n`));
+        console.log(chalk.bold.white(`  📊 Scan Results`));
+        console.log(chalk.gray(`  ${'━'.repeat(40)}\n`));
+        console.log(chalk.white(`  ${chalk.bold('Total Findings:')} ${chalk.cyan(findings.length)}\n`));
         
         // Show breakdown first
-        console.log(chalk.gray(`  Severity Breakdown (All Findings):`));
-        console.log(chalk.gray(`  ┌${'─'.repeat(30)}┐`));
-        if (severityCounts.critical) console.log(chalk.gray(`  │ `) + chalk.bgRed.white.bold(` CRITICAL `) + chalk.red.bold(` ${severityCounts.critical}`.padEnd(17)) + chalk.gray(` │`));
-        if (severityCounts.high) console.log(chalk.gray(`  │ `) + chalk.red.bold(` HIGH     `) + chalk.red(` ${severityCounts.high}`.padEnd(17)) + chalk.gray(` │`));
-        if (severityCounts.medium) console.log(chalk.gray(`  │ `) + chalk.yellow.bold(` MEDIUM   `) + chalk.yellow(` ${severityCounts.medium}`.padEnd(17)) + chalk.gray(` │`));
-        if (severityCounts.low) console.log(chalk.gray(`  │ `) + chalk.blue.bold(` LOW      `) + chalk.blue(` ${severityCounts.low}`.padEnd(17)) + chalk.gray(` │`));
-        if (severityCounts.info) console.log(chalk.gray(`  │ `) + chalk.gray.bold(` INFO     `) + chalk.gray(` ${severityCounts.info}`.padEnd(17)) + chalk.gray(` │`));
-        console.log(chalk.gray(`  └${'─'.repeat(30)}┘\n`));
+        console.log(chalk.gray(`  Severity Breakdown:`));
+        console.log(chalk.gray(`  ╭${'─'.repeat(36)}╮`));
+        if (severityCounts.critical) console.log(chalk.gray(`  │ `) + chalk.bold.magenta(` 🔥 CRITICAL   `) + chalk.magenta(`${severityCounts.critical}`.padStart(3)) + chalk.gray('                │'));
+        if (severityCounts.high) console.log(chalk.gray(`  │ `) + chalk.red.bold(` ⚠️  HIGH       `) + chalk.red(`${severityCounts.high}`.padStart(3)) + chalk.gray('                │'));
+        if (severityCounts.medium) console.log(chalk.gray(`  │ `) + chalk.yellow.bold(` ⚡ MEDIUM     `) + chalk.yellow(`${severityCounts.medium}`.padStart(3)) + chalk.gray('                │'));
+        if (severityCounts.low) console.log(chalk.gray(`  │ `) + chalk.blue.bold(` ℹ️  LOW        `) + chalk.blue(`${severityCounts.low}`.padStart(3)) + chalk.gray('                │'));
+        if (severityCounts.info) console.log(chalk.gray(`  │ `) + chalk.cyan.bold(` 💡 INFO       `) + chalk.cyan(`${severityCounts.info}`.padStart(3)) + chalk.gray('                │'));
+        console.log(chalk.gray(`  ╰${'─'.repeat(36)}╯\n`));
         
         // Display filtered findings
         if (displayFindings.length === 0) {
-          console.log(chalk.green(`  ✅ No findings at or above "${showLevel.toUpperCase()}" level to display.`));
-          console.log(chalk.gray(`     (Lower severity findings exist but are hidden. Use --show-level to adjust.)\n`));
+          console.log(chalk.green(`  ✅ No findings at or above ${chalk.bold(showLevel.toUpperCase())} level`));
+          console.log(chalk.gray(`  ${findings.length} lower-severity finding(s) hidden · Use --show-level to adjust\n`));
         } else {
-          console.log(chalk.bold(`  ⚠️  Displaying ${displayFindings.length} Finding(s) >= ${showLevel.toUpperCase()}\n`));
+          console.log(chalk.bold.white(`  📋 Detailed Findings`) + chalk.gray(` (${displayFindings.length} shown · >= ${showLevel.toUpperCase()})`));
+          console.log(chalk.gray(`  ${'━'.repeat(40)}\n`));
           console.log(formatTable(displayFindings));
           console.log('');
         }
         
         // Mention JSON export if there are more findings
         if (displayFindings.length < findings.length) {
-          console.log(chalk.gray(`  💡 ${findings.length - displayFindings.length} additional lower-severity findings hidden. Use --show-level to view all.\n`));
+          console.log(chalk.gray(`  💡 ${findings.length - displayFindings.length} additional lower-severity finding(s) hidden · Use ${chalk.white('--show-level')} to view all\n`));
         }
       }
 
@@ -1395,7 +1416,7 @@ const opts = program.opts();
           }
         };
         fs.writeFileSync(path.resolve(opts.json), JSON.stringify(report, null, 2), 'utf8');
-        console.log(chalk.cyan(`  📄 Full report (${findings.length} findings) saved → `) + chalk.bold(opts.json));
+        console.log(chalk.cyan(`  📄 Full report (${chalk.bold.white(findings.length)} findings) → `) + chalk.bold.white(opts.json));
       }
 
       // Check fail level
@@ -1422,16 +1443,16 @@ const opts = program.opts();
         }
       };
       fs.writeFileSync(path.resolve(opts.json), JSON.stringify(report, null, 2), 'utf8');
-      console.log(chalk.cyan(`  📄 Full report (${allFindings.length} findings) saved → `) + chalk.bold(opts.json));
+      console.log(chalk.cyan(`  📄 Full report (${chalk.bold.white(allFindings.length)} findings) → `) + chalk.bold.white(opts.json));
     }
 
     // Summary
     if (bundlesToScan.length > 1) {
       console.log(chalk.bold.cyan(`\n${'═'.repeat(90)}`));
-      console.log(chalk.bold.cyan(`\n  📊 SCAN SUMMARY\n`));
-      console.log(chalk.gray(`  ┌${'─'.repeat(86)}┐`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`Bundles Scanned: `) + chalk.white(bundlesToScan.length.toString().padEnd(66)) + chalk.gray(` │`));
-      console.log(chalk.gray(`  │ `) + chalk.cyan.bold(`Total Findings:  `) + chalk.white(allFindings.length.toString().padEnd(66)) + chalk.gray(` │`));
+      console.log(chalk.bold.white(`\n  📊 Overall Summary\n`));
+      console.log(chalk.gray(`  ╭${'─'.repeat(86)}╮`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`📦 Bundles Scanned: `) + chalk.bold.white(bundlesToScan.length.toString().padEnd(64)) + chalk.gray(` │`));
+      console.log(chalk.gray(`  │ `) + chalk.cyan(`🔍 Total Findings:  `) + chalk.bold.yellow(allFindings.length.toString().padEnd(64)) + chalk.gray(` │`));
       
       // Overall severity breakdown
       const overallSeverity = allFindings.reduce((acc, f) => {
@@ -1441,14 +1462,14 @@ const opts = program.opts();
       
       if (Object.keys(overallSeverity).length > 0) {
         console.log(chalk.gray(`  ├${'─'.repeat(86)}┤`));
-        if (overallSeverity.critical) console.log(chalk.gray(`  │ `) + chalk.bgRed.white.bold(` CRITICAL `) + chalk.red.bold(` ${overallSeverity.critical}`.padEnd(65)) + chalk.gray(` │`));
-        if (overallSeverity.high) console.log(chalk.gray(`  │ `) + chalk.red.bold(` HIGH     `) + chalk.red(` ${overallSeverity.high}`.padEnd(65)) + chalk.gray(` │`));
-        if (overallSeverity.medium) console.log(chalk.gray(`  │ `) + chalk.yellow.bold(` MEDIUM   `) + chalk.yellow(` ${overallSeverity.medium}`.padEnd(65)) + chalk.gray(` │`));
-        if (overallSeverity.low) console.log(chalk.gray(`  │ `) + chalk.blue.bold(` LOW      `) + chalk.blue(` ${overallSeverity.low}`.padEnd(65)) + chalk.gray(` │`));
-        if (overallSeverity.info) console.log(chalk.gray(`  │ `) + chalk.gray.bold(` INFO     `) + chalk.gray(` ${overallSeverity.info}`.padEnd(65)) + chalk.gray(` │`));
+        if (overallSeverity.critical) console.log(chalk.gray(`  │ `) + chalk.bold.magenta(` 🔥 CRITICAL   `) + chalk.magenta(`${overallSeverity.critical}`.padStart(3).padEnd(67)) + chalk.gray(` │`));
+        if (overallSeverity.high) console.log(chalk.gray(`  │ `) + chalk.red.bold(` ⚠️  HIGH       `) + chalk.red(`${overallSeverity.high}`.padStart(3).padEnd(67)) + chalk.gray(` │`));
+        if (overallSeverity.medium) console.log(chalk.gray(`  │ `) + chalk.yellow.bold(` ⚡ MEDIUM     `) + chalk.yellow(`${overallSeverity.medium}`.padStart(3).padEnd(67)) + chalk.gray(` │`));
+        if (overallSeverity.low) console.log(chalk.gray(`  │ `) + chalk.blue.bold(` ℹ️  LOW        `) + chalk.blue(`${overallSeverity.low}`.padStart(3).padEnd(67)) + chalk.gray(` │`));
+        if (overallSeverity.info) console.log(chalk.gray(`  │ `) + chalk.cyan.bold(` 💡 INFO       `) + chalk.cyan(`${overallSeverity.info}`.padStart(3).padEnd(67)) + chalk.gray(` │`));
       }
       
-      console.log(chalk.gray(`  └${'─'.repeat(86)}┘`));
+      console.log(chalk.gray(`  ╰${'─'.repeat(86)}╯`));
     }
 
     // CI fail level
@@ -1456,22 +1477,26 @@ const opts = program.opts();
     console.log(chalk.bold.cyan(`\n${'═'.repeat(90)}\n`));
     
     if (hasBlockingFindings) {
-      console.log(chalk.red(`  ⛔ `) + chalk.bold.red(`SECURITY CHECK FAILED`));
-      console.log(chalk.gray(`  ─`.repeat(45)));
-      console.log(chalk.white(`  Findings at or above fail level `) + chalk.bold.yellow(`"${failLevel.toUpperCase()}"`) + chalk.white(` detected.`));
-      console.log(chalk.white(`  Please review and address the security issues before deploying.\n`));
+      console.log(chalk.magenta(`  ╭${'─'.repeat(60)}╮`));
+      console.log(chalk.magenta(`  │`) + `  ⛔  ${chalk.bold.magenta('SECURITY CHECK FAILED')}                           `.padEnd(71) + chalk.magenta(`│`));
+      console.log(chalk.magenta(`  ├${'─'.repeat(60)}┤`));
+      console.log(chalk.magenta(`  │`) + chalk.white(`  Findings at or above ${chalk.bold.magenta(failLevel.toUpperCase())} level detected`).padEnd(71) + chalk.magenta(`│`));
+      console.log(chalk.magenta(`  │`) + chalk.gray(`  Please review and address security issues`).padEnd(71) + chalk.magenta(`│`));
+      console.log(chalk.magenta(`  ╰${'─'.repeat(60)}╯\n`));
       if (opts.json) {
-        console.log(chalk.cyan(`  📋 Review full details in: `) + chalk.bold(opts.json));
+        console.log(chalk.cyan(`  📋 Full report: `) + chalk.bold.white(opts.json));
       }
       console.log(chalk.gray(`\n  Exit code: 1\n`));
       process.exit(1);
     } else {
-      console.log(chalk.green(`  ✅ `) + chalk.bold.green(`SECURITY CHECK PASSED`));
-      console.log(chalk.gray(`  ─`.repeat(45)));
-      console.log(chalk.white(`  No findings at or above fail level `) + chalk.bold.cyan(`"${failLevel.toUpperCase()}"`));
-      console.log(chalk.white(`  Bundle is ready for deployment!\n`));
+      console.log(chalk.green(`  ╭${'─'.repeat(60)}╮`));
+      console.log(chalk.green(`  │`) + `  ✅  ${chalk.bold.green('SECURITY CHECK PASSED')}                          `.padEnd(71) + chalk.green(`│`));
+      console.log(chalk.green(`  ├${'─'.repeat(60)}┤`));
+      console.log(chalk.green(`  │`) + chalk.white(`  No findings at or above ${chalk.bold.cyan(failLevel.toUpperCase())} level`).padEnd(71) + chalk.green(`│`));
+      console.log(chalk.green(`  │`) + chalk.gray(`  Bundle is ready for deployment!`).padEnd(71) + chalk.green(`│`));
+      console.log(chalk.green(`  ╰${'─'.repeat(60)}╯\n`));
       if (opts.json) {
-        console.log(chalk.cyan(`  📋 Full scan details saved to: `) + chalk.bold(opts.json));
+        console.log(chalk.cyan(`  📋 Full report: `) + chalk.bold.white(opts.json));
       }
       console.log(chalk.gray(`\n  Exit code: 0\n`));
       process.exit(0);

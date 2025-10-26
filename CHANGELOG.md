@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2025-10-26
+
+### ✨ Enhanced UI/UX
+
+#### Visual Improvements
+- 🎨 **Beautiful New Design**: Completely redesigned output with modern aesthetics
+- 🌈 **Improved Color Scheme**: Clean font colors without harsh backgrounds
+  - Critical: Bold magenta (🔥)
+  - High: Bold red (⚠️)
+  - Medium: Yellow (⚡)
+  - Low: Blue (ℹ️)
+  - Info: Cyan (💡)
+- 🎯 **Better Visual Hierarchy**: Enhanced spacing and typography
+- 📦 **Modern Borders**: Rounded corners (╭╮╰╯) for softer appearance
+- 🔄 **Gradient Progress Bar**: Color-changing progress (cyan → blue → green)
+- 📊 **Enhanced Reports**: Cleaner severity breakdown boxes
+- ✨ **Icon Updates**: Added contextual emojis throughout (📄📁💾⚙️🗺️)
+- 🎭 **Professional Status Boxes**: Beautiful bordered result containers
+
+#### User Experience
+- 👁️ **Better Readability**: Improved contrast and spacing
+- 🎯 **Clear Information Hierarchy**: Important info stands out naturally
+- 💫 **Smooth Scanning Experience**: Real-time feedback with icons
+- 🎨 **Less Visual Fatigue**: Removed overwhelming red backgrounds
+
+---
+
 ## [1.0.0] - 2025-10-26
 
 ### 🎉 Initial Release
@@ -95,14 +122,14 @@ First public release of Lupin Security Scanner!
 
 ## [Unreleased]
 
-### Planned for v1.1.0
+### Planned for v1.2.0
 - [ ] Source map support for better error locations
 - [ ] Custom rule definitions
 - [ ] Configuration file support (.lupinrc)
 - [ ] HTML report generation
-- [ ] IDE extensions (VS Code, IntelliJ)
 
 ### Planned for v2.0.0
+- [ ] IDE extensions (VS Code, IntelliJ)
 - [ ] Programmatic Node.js API
 - [ ] Plugin system
 - [ ] Real-time file watching
@@ -118,4 +145,5 @@ Found a bug or want to suggest a feature? [Open an issue](https://github.com/adn
 
 ---
 
+[1.1.0]: https://github.com/adnxy/react-native-lupin/releases/tag/v1.1.0
 [1.0.0]: https://github.com/adnxy/react-native-lupin/releases/tag/v1.0.0
