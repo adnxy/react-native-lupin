@@ -1,0 +1,6 @@
+# Override GitHub secret scanning for test files
+# These files contain intentional fake secrets for testing the security scanner
+
+../test/fixtures/** linguist-generated=true -secret-scanning
+../test/unit/** -secret-scanning
+

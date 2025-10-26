@@ -1,0 +1,156 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ created ]
+
+jobs:
+  test:
+    name: Test on Node.js ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run linter
+        run: npm run lint || echo "No lint script configured"
+
+      - name: Upload coverage
+        if: matrix.node-version == '18.x'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install package globally
+        run: npm link
+
+      - name: Test CLI
+        run: |
+          lupin --help
+          lupin --bundle test/fixtures/sample-clean-bundle.js
+          
+      - name: Test vulnerable bundle detection
+        run: |
+          set +e
+          lupin --bundle test/fixtures/sample-vulnerable-bundle.js --fail-level high
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "ERROR: Should have failed on vulnerable bundle"
+            exit 1
+          fi
+          echo "Correctly detected vulnerable bundle"
+
+      - name: Test JSON output
+        run: |
+          lupin --bundle test/fixtures/sample-vulnerable-bundle.js --json report.json || true
+          if [ ! -f report.json ]; then
+            echo "ERROR: JSON report not generated"
+            exit 1
+          fi
+          echo "JSON report generated successfully"
+
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: [test, integration]
+    if: github.event_name == 'release'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release Assets
+        run: |
+          npm pack
+          mv *.tgz lupin-security-scanner-${{ github.event.release.tag_name }}.tgz
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./lupin-security-scanner-${{ github.event.release.tag_name }}.tgz
+          asset_name: lupin-security-scanner-${{ github.event.release.tag_name }}.tgz
+          asset_content_type: application/gzip
+
+  security-scan:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Run npm audit
+        run: npm audit --production || true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+

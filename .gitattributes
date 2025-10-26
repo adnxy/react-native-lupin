@@ -1,0 +1,11 @@
+# Git attributes for lupin-security-scanner
+
+# Test fixtures contain intentional fake secrets for testing purposes
+# They should not trigger GitHub secret scanning
+test/fixtures/** linguist-generated=true
+test/fixtures/sample-vulnerable-bundle.js -diff
+test/unit/scanner.test.js -diff
+
+# Mark test files as test code
+test/** linguist-language=JavaScript
+
