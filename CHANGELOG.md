@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2025-10-26
+
+### 🚀 New Features
+
+#### Auto-Generated JSON Reports
+- 📄 **Automatic JSON Reports**: JSON reports are now generated automatically by default
+  - Default filename: `lupin-report-{timestamp}.json`
+  - Timestamp format: ISO 8601 (e.g., `lupin-report-2025-10-26T14-30-45.json`)
+  - Use `--no-json` flag to disable automatic generation
+  - Use `--json custom-name.json` to specify custom filename
+
+#### Package Name Consistency
+- 📦 **Standardized Package Name**: All documentation now uses `react-native-lupin` consistently
+  - Updated all references from `lupin-security-scanner` to `react-native-lupin`
+  - Consistent branding across README, CI/CD guides, and documentation
+
+### Benefits
+- 🎯 **Better CI/CD Integration**: Reports always available without manual flag
+- 📊 **Historical Tracking**: Timestamped reports make it easy to track security over time
+- 🔄 **Simplified Workflow**: No need to remember to add `--json` flag
+
+---
+
 ## [1.1.0] - 2025-10-26
 
 ### ✨ Enhanced UI/UX
@@ -145,5 +168,6 @@ Found a bug or want to suggest a feature? [Open an issue](https://github.com/adn
 
 ---
 
+[1.2.0]: https://github.com/adnxy/react-native-lupin/releases/tag/v1.2.0
 [1.1.0]: https://github.com/adnxy/react-native-lupin/releases/tag/v1.1.0
 [1.0.0]: https://github.com/adnxy/react-native-lupin/releases/tag/v1.0.0

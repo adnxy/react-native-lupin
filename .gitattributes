@@ -1,4 +1,4 @@
-# Git attributes for lupin-security-scanner
+# Git attributes for 
 
 # Test fixtures contain intentional fake secrets for testing purposes
 # They should not trigger GitHub secret scanning

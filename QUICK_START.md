@@ -7,7 +7,7 @@ Get started in 2 minutes!
 ## Step 1: Install
 
 ```bash
-npm install -g lupin-security-scanner
+npm install -g react-native-lupin
 ```
 
 ---

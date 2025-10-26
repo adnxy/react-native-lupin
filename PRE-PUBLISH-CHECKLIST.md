@@ -50,7 +50,7 @@ Use this checklist before publishing to NPM.
 
 ```bash
 # Navigate to package directory
-cd ~/Desktop/mobile-workspace/lupin-security-scanner
+cd ~/Desktop/mobile-workspace/react-native-lupin
 
 # Link globally
 npm link
@@ -61,13 +61,13 @@ lupin --help
 lupin --scan-all
 
 # Unlink when done
-npm unlink -g lupin-security-scanner
+npm unlink -g react-native-lupin
 ```
 
 ### Verify Package Contents
 
 ```bash
-cd ~/Desktop/mobile-workspace/lupin-security-scanner
+cd ~/Desktop/mobile-workspace/react-native-lupin
 
 # See what will be published
 npm pack --dry-run
@@ -75,7 +75,7 @@ npm pack --dry-run
 
 **Expected output:**
 ```
-npm notice package: lupin-security-scanner@1.0.0
+npm notice package: react-native-lupin@1.0.0
 npm notice === Tarball Contents ===
 npm notice 48.6kB bin/lupin.js
 npm notice 15.2kB README.md
@@ -93,18 +93,18 @@ npm notice total files:       5
 npm pack
 
 # Extract and inspect
-tar -xzf lupin-security-scanner-1.0.0.tgz
+tar -xzf react-native-lupin-1.0.0.tgz
 cd package
 ls -la
 
 # Test installation from tarball
-npm install -g ./lupin-security-scanner-1.0.0.tgz
+npm install -g ./react-native-lupin-1.0.0.tgz
 lupin --version
 
 # Clean up
 cd ..
-rm -rf package lupin-security-scanner-*.tgz
-npm uninstall -g lupin-security-scanner
+rm -rf package react-native-lupin-*.tgz
+npm uninstall -g react-native-lupin
 ```
 
 ---
@@ -114,7 +114,7 @@ npm uninstall -g lupin-security-scanner
 ### 1. Final Check
 
 ```bash
-cd ~/Desktop/mobile-workspace/lupin-security-scanner
+cd ~/Desktop/mobile-workspace/react-native-lupin
 
 # Check version
 cat package.json | grep '"version"'
@@ -154,10 +154,10 @@ npm publish
 
 ```bash
 # View on NPM (wait 1-2 minutes for indexing)
-open https://www.npmjs.com/package/lupin-security-scanner
+open https://www.npmjs.com/package/react-native-lupin
 
 # Test installation
-npx lupin-security-scanner@latest --help
+npx react-native-lupin@latest --help
 ```
 
 ---
@@ -191,8 +191,8 @@ Go to: https://github.com/adnxy/react-native-lupin/releases/new
 
 Add to README.md:
 ```markdown
-[![npm version](https://img.shields.io/npm/v/lupin-security-scanner.svg)](https://www.npmjs.com/package/lupin-security-scanner)
-[![npm downloads](https://img.shields.io/npm/dm/lupin-security-scanner.svg)](https://www.npmjs.com/package/lupin-security-scanner)
+[![npm version](https://img.shields.io/npm/v/react-native-lupin.svg)](https://www.npmjs.com/package/react-native-lupin)
+[![npm downloads](https://img.shields.io/npm/dm/react-native-lupin.svg)](https://www.npmjs.com/package/react-native-lupin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ```
 
@@ -224,7 +224,7 @@ git push --tags
 **Solution**: Change package name in package.json or use scoped package:
 ```json
 {
-  "name": "@adnxy/lupin-security-scanner"
+  "name": "@adnxy/react-native-lupin"
 }
 ```
 
@@ -255,10 +255,10 @@ npm login
 
 ```bash
 # View downloads
-npm info lupin-security-scanner
+npm info react-native-lupin
 
 # Check NPM page
-open https://www.npmjs.com/package/lupin-security-scanner
+open https://www.npmjs.com/package/react-native-lupin
 ```
 
 ### Monitor

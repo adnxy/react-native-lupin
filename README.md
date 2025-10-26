@@ -4,7 +4,7 @@
 
 Detects 60+ vulnerabilities: API keys, secrets, insecure code patterns, and mobile security issues.
 
-[![npm version](https://img.shields.io/npm/v/lupin-security-scanner.svg)](https://www.npmjs.com/package/lupin-security-scanner)
+[![npm version](https://img.shields.io/npm/v/react-native-lupin.svg)](https://www.npmjs.com/package/react-native-lupin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -13,7 +13,7 @@ Detects 60+ vulnerabilities: API keys, secrets, insecure code patterns, and mobi
 
 ```bash
 # Install globally
-npm install -g lupin-security-scanner
+npm install -g react-native-lupin
 
 # Run in your React Native/Expo project
 lupin
@@ -42,12 +42,12 @@ Scans your compiled JavaScript bundles for:
 
 ### Global (Recommended)
 ```bash
-npm install -g lupin-security-scanner
+npm install -g react-native-lupin
 ```
 
 ### Or use without installing
 ```bash
-npx lupin-security-scanner
+npx react-native-lupin
 ```
 
 ---
@@ -189,7 +189,7 @@ lupin --fail-level high || exit 1
 - name: Security Scan
   run: |
     npx expo export
-    npx lupin-security-scanner --scan-all --fail-level high
+    npx react-native-lupin --scan-all --fail-level high
 ```
 
 **GitLab CI:**
@@ -197,7 +197,7 @@ lupin --fail-level high || exit 1
 security-scan:
   script:
     - npx expo export
-    - npx lupin-security-scanner --scan-all --json report.json
+    - npx react-native-lupin --scan-all --json report.json
   artifacts:
     paths:
       - report.json
@@ -331,7 +331,7 @@ MIT © [Your Name]
 ## 🔗 Links
 
 - **GitHub**: https://github.com/adnxy/react-native-lupin
-- **NPM**: https://www.npmjs.com/package/lupin-security-scanner
+- **NPM**: https://www.npmjs.com/package/react-native-lupin
 - **Issues**: https://github.com/adnxy/react-native-lupin/issues
 
 ---

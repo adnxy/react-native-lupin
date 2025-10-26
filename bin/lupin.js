@@ -1135,7 +1135,8 @@ program
   .option('-b, --bundle <path>', 'Path to compiled JS bundle (manual mode)')
   .option('-t, --type <type>', 'Project type: expo or rn-cli (auto-detects if not specified)')
   .option('-s, --sourcemap <path>', 'Optional path to source map (for future mapping enhancements)')
-  .option('--json <outfile>', 'Write full JSON report to file (contains ALL findings)')
+  .option('--json [outfile]', 'Write JSON report (default: lupin-report-{timestamp}.json). Enabled by default.')
+  .option('--no-json', 'Disable automatic JSON report generation')
   .option('--fail-level <level>', 'Exit non-zero if any finding >= level (info|low|medium|high|critical)', 'medium')
   .option('--show-level <level>', 'Only display findings >= level on screen (info|low|medium|high|critical). JSON contains all.', 'medium')
   .option('--max-findings <n>', 'Limit number of findings (for noisy bundles)', (v) => parseInt(v, 10), 5000)
@@ -1144,6 +1145,15 @@ program
   .parse(process.argv);
 
 const opts = program.opts();
+
+// Auto-generate JSON report filename if enabled and no filename provided
+if (opts.json !== false) {
+  if (opts.json === true || opts.json === undefined) {
+    // Generate default filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    opts.json = `lupin-report-${timestamp}.json`;
+  }
+}
 
 (async function main() {
   try {
@@ -1404,7 +1414,7 @@ ${chalk.bold.cyan('╚═══════════════════�
       allFindings.push(...findings.map(f => ({ ...f, bundle: bundlePath })));
 
       // JSON report per bundle (contains ALL findings, not filtered)
-      if (opts.json && bundlesToScan.length === 1) {
+      if (opts.json !== false && bundlesToScan.length === 1) {
         const report = { 
           meta, 
           findings,
@@ -1426,7 +1436,7 @@ ${chalk.bold.cyan('╚═══════════════════�
     }
 
     // Multi-bundle JSON report (contains ALL findings)
-    if (opts.json && bundlesToScan.length > 1) {
+    if (opts.json !== false && bundlesToScan.length > 1) {
       const overallSeverity = allFindings.reduce((acc, f) => {
         acc[f.severity] = (acc[f.severity] || 0) + 1;
         return acc;
@@ -1483,7 +1493,7 @@ ${chalk.bold.cyan('╚═══════════════════�
       console.log(chalk.magenta(`  │`) + chalk.white(`  Findings at or above ${chalk.bold.magenta(failLevel.toUpperCase())} level detected`).padEnd(71) + chalk.magenta(`│`));
       console.log(chalk.magenta(`  │`) + chalk.gray(`  Please review and address security issues`).padEnd(71) + chalk.magenta(`│`));
       console.log(chalk.magenta(`  ╰${'─'.repeat(60)}╯\n`));
-      if (opts.json) {
+      if (opts.json !== false) {
         console.log(chalk.cyan(`  📋 Full report: `) + chalk.bold.white(opts.json));
       }
       console.log(chalk.gray(`\n  Exit code: 1\n`));
@@ -1495,7 +1505,7 @@ ${chalk.bold.cyan('╚═══════════════════�
       console.log(chalk.green(`  │`) + chalk.white(`  No findings at or above ${chalk.bold.cyan(failLevel.toUpperCase())} level`).padEnd(71) + chalk.green(`│`));
       console.log(chalk.green(`  │`) + chalk.gray(`  Bundle is ready for deployment!`).padEnd(71) + chalk.green(`│`));
       console.log(chalk.green(`  ╰${'─'.repeat(60)}╯\n`));
-      if (opts.json) {
+      if (opts.json !== false) {
         console.log(chalk.cyan(`  📋 Full report: `) + chalk.bold.white(opts.json));
       }
       console.log(chalk.gray(`\n  Exit code: 0\n`));
