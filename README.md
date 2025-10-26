@@ -24,25 +24,43 @@ Automated detection of security vulnerabilities in compiled JavaScript bundles, 
 
 ## Installation
 
-### Using npm
+### Global Installation (Recommended)
 
 ```bash
-# Install globally
+# Install globally with npm
 npm install -g react-native-lupin
 
-# Or run without installing
-npx react-native-lupin
+# Install globally with yarn
+yarn global add react-native-lupin
 ```
 
-### Using yarn
+After installation, simply run:
+```bash
+lupin
+```
+
+### Run Without Installing
 
 ```bash
-# Install globally
-yarn global add react-native-lupin
+# Using npx
+npx react-native-lupin
 
-# Or run without installing
+# Using yarn
 yarn dlx react-native-lupin
 ```
+
+---
+
+## Quick Start
+
+**Step 1:** Generate a bundle for your project
+
+**Step 2:** Run Lupin
+```bash
+lupin
+```
+
+That's it! Lupin will auto-detect your project type and scan your bundles.
 
 ---
 
@@ -81,13 +99,19 @@ npx react-native bundle \
 
 ## Usage
 
-### Basic Scan
+### Basic Scan (Automatic)
+
+After installation, simply run:
 
 ```bash
 lupin
 ```
 
-Auto-detects your project type and locates compiled bundles.
+✨ Lupin will automatically:
+- Detect your project type (Expo or React Native CLI)
+- Find compiled bundles in your project
+- Scan for security vulnerabilities
+- Generate a JSON report with all findings
 
 **Note:** JSON reports are generated automatically by default with filename `lupin-report-{timestamp}.json`.
 
