@@ -51,7 +51,7 @@ jobs:
         run: npx expo export
       
       - name: Run security scan
-        run: npx lupin-security-scanner --scan-all --fail-level high --json lupin-report.json
+        run: npx react-native-lupin --scan-all --fail-level high --json lupin-report.json
       
       - name: Upload security report
         if: always()
@@ -93,7 +93,7 @@ jobs:
         id: scan
         continue-on-error: true
         run: |
-          npx lupin-security-scanner --scan-all --fail-level high --json report.json --no-color > scan-output.txt || true
+          npx react-native-lupin --scan-all --fail-level high --json report.json --no-color > scan-output.txt || true
           cat scan-output.txt
       
       - name: Comment PR
@@ -131,7 +131,7 @@ jobs:
     ./gradlew bundleRelease
 
 - name: Run security scan
-  run: npx lupin-security-scanner --type rn-cli --fail-level high
+  run: npx react-native-lupin --type rn-cli --fail-level high
 ```
 
 ---
@@ -167,7 +167,7 @@ security-scan:
   dependencies:
     - build
   script:
-    - npx lupin-security-scanner --scan-all --fail-level high --json lupin-report.json
+    - npx react-native-lupin --scan-all --fail-level high --json lupin-report.json
   artifacts:
     reports:
       # GitLab can display JSON reports
@@ -185,7 +185,7 @@ security-scan:
   stage: security
   image: node:18
   script:
-    - npx lupin-security-scanner --scan-all --fail-level high --json report.json --no-color > scan.txt || true
+    - npx react-native-lupin --scan-all --fail-level high --json report.json --no-color > scan.txt || true
     - cat scan.txt
     
     # Post comment to MR (if using GitLab API)
@@ -223,7 +223,7 @@ security-scan:
   dependencies:
     - build-android
   script:
-    - npx lupin-security-scanner --type rn-cli --fail-level high
+    - npx react-native-lupin --type rn-cli --fail-level high
 ```
 
 ---
@@ -258,7 +258,7 @@ Create `eas-hooks/post-export.sh`:
 
 echo "🔒 Running security scan..."
 
-npx lupin-security-scanner --scan-all --fail-level high --json lupin-report.json
+npx react-native-lupin --scan-all --fail-level high --json lupin-report.json
 
 if [ $? -ne 0 ]; then
   echo "❌ Security scan failed!"
@@ -322,7 +322,7 @@ jobs:
         run: npx expo export
       
       - name: Security Scan
-        run: npx lupin-security-scanner --scan-all --fail-level high
+        run: npx react-native-lupin --scan-all --fail-level high
       
       - name: Build on EAS
         if: success()
@@ -358,7 +358,7 @@ jobs:
       
       - run:
           name: Security scan
-          command: npx lupin-security-scanner --scan-all --fail-level high --json report.json
+          command: npx react-native-lupin --scan-all --fail-level high --json report.json
       
       - store_artifacts:
           path: report.json
@@ -388,7 +388,7 @@ Add a Script step in your `bitrise.yml`:
           npx expo export
           
           # Run security scan
-          npx lupin-security-scanner --scan-all --fail-level high --json $BITRISE_DEPLOY_DIR/lupin-report.json
+          npx react-native-lupin --scan-all --fail-level high --json $BITRISE_DEPLOY_DIR/lupin-report.json
           
           # Upload report
           envman add --key SECURITY_REPORT_PATH --value "$BITRISE_DEPLOY_DIR/lupin-report.json"
@@ -540,7 +540,7 @@ image: node:18-alpine
 ```yaml
 - run: npm ci
 - run: npx expo export
-- run: npx lupin-security-scanner
+- run: npx react-native-lupin
 ```
 
 ### Production-Ready
@@ -548,7 +548,7 @@ image: node:18-alpine
 ```yaml
 - run: npm ci
 - run: npx expo export
-- run: npx lupin-security-scanner --scan-all --fail-level high --json report.json
+- run: npx react-native-lupin --scan-all --fail-level high --json report.json
 - uses: actions/upload-artifact@v3
   if: always()
   with:
@@ -559,7 +559,7 @@ image: node:18-alpine
 ### Enterprise (with notifications)
 
 ```yaml
-- run: npx lupin-security-scanner --scan-all --fail-level critical --json report.json || true
+- run: npx react-native-lupin --scan-all --fail-level critical --json report.json || true
 - run: |
     curl -X POST $SLACK_WEBHOOK \
       -d "Security scan completed: $(jq '.summary.total' report.json) findings"

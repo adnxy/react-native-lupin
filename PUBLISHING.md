@@ -58,7 +58,7 @@ Should show your username.
 ### Step 1: Clean Up
 
 ```bash
-cd ~/Desktop/mobile-workspace/lupin-security-scanner
+cd ~/Desktop/mobile-workspace/react-native-lupin
 
 # Remove unnecessary files
 rm -rf node_modules dist test coverage .DS_Store
@@ -78,7 +78,7 @@ cd ~/Desktop/mobile-workspace/onboarding-app
 lupin
 
 # If it works, unlink
-npm unlink -g lupin-security-scanner
+npm unlink -g react-native-lupin
 ```
 
 ### Step 3: Verify Package Contents
@@ -106,11 +106,11 @@ package.json
 npm pack
 
 # Extract and inspect
-tar -xzf lupin-security-scanner-1.0.0.tgz
+tar -xzf react-native-lupin-1.0.0.tgz
 ls -la package/
 
 # Clean up
-rm -rf package/ lupin-security-scanner-*.tgz
+rm -rf package/ react-native-lupin-*.tgz
 ```
 
 ---
@@ -121,7 +121,7 @@ rm -rf package/ lupin-security-scanner-*.tgz
 
 ```bash
 # Make sure you're in the right directory
-cd ~/Desktop/mobile-workspace/lupin-security-scanner
+cd ~/Desktop/mobile-workspace/react-native-lupin
 
 # Verify version
 cat package.json | grep version
@@ -132,7 +132,7 @@ npm publish
 
 You should see:
 ```
-npm notice 📦  lupin-security-scanner@1.0.0
+npm notice 📦  react-native-lupin@1.0.0
 npm notice === Tarball Contents ===
 npm notice 41.5kB bin/lupin.js
 npm notice 12.3kB README.md
@@ -141,17 +141,17 @@ npm notice === Tarball Details ===
 npm notice package size:  XX.X kB
 npm notice unpacked size: XX.X kB
 npm notice total files:   X
-+ lupin-security-scanner@1.0.0
++ react-native-lupin@1.0.0
 ```
 
 ### Verify Published Package
 
 ```bash
 # View on NPM
-open https://www.npmjs.com/package/lupin-security-scanner
+open https://www.npmjs.com/package/react-native-lupin
 
 # Install and test
-npx lupin-security-scanner@latest --help
+npx react-native-lupin@latest --help
 ```
 
 ---
@@ -233,7 +233,7 @@ git push origin main --tags
 npm publish
 
 # 6. Verify
-npx lupin-security-scanner@latest --version
+npx react-native-lupin@latest --version
 ```
 
 ---
@@ -244,7 +244,7 @@ npx lupin-security-scanner@latest --version
 
 ```bash
 npm publish
-# Installs with: npm install lupin-security-scanner
+# Installs with: npm install react-native-lupin
 ```
 
 ### Beta/Next
@@ -257,7 +257,7 @@ npm version 1.1.0-beta.0
 npm publish --tag beta
 
 # Users install with:
-npm install lupin-security-scanner@beta
+npm install react-native-lupin@beta
 ```
 
 ### Legacy Versions
@@ -277,7 +277,7 @@ npm publish --tag legacy-v1
 
 ```json
 {
-  "name": "@your-username/lupin-security-scanner"
+  "name": "@your-username/react-native-lupin"
 }
 ```
 
@@ -389,8 +389,8 @@ jobs:
 ### 1. Add NPM Badge to README
 
 ```markdown
-[![npm version](https://img.shields.io/npm/v/lupin-security-scanner.svg)](https://www.npmjs.com/package/lupin-security-scanner)
-[![npm downloads](https://img.shields.io/npm/dm/lupin-security-scanner.svg)](https://www.npmjs.com/package/lupin-security-scanner)
+[![npm version](https://img.shields.io/npm/v/react-native-lupin.svg)](https://www.npmjs.com/package/react-native-lupin)
+[![npm downloads](https://img.shields.io/npm/dm/react-native-lupin.svg)](https://www.npmjs.com/package/react-native-lupin)
 ```
 
 ### 2. Announce
@@ -404,10 +404,10 @@ jobs:
 
 ```bash
 # Check download stats
-npm info lupin-security-scanner
+npm info react-native-lupin
 
 # View on NPM
-open https://www.npmjs.com/package/lupin-security-scanner
+open https://www.npmjs.com/package/react-native-lupin
 ```
 
 ---
@@ -430,13 +430,13 @@ npm publish
 
 ### Unpublish (within 72 hours)
 ```bash
-npm unpublish lupin-security-scanner@1.0.0
+npm unpublish react-native-lupin@1.0.0
 ```
 
 ⚠️ **Warning**: Unpublishing is discouraged! Consider deprecating instead:
 
 ```bash
-npm deprecate lupin-security-scanner@1.0.0 "Use version 1.0.1 instead"
+npm deprecate react-native-lupin@1.0.0 "Use version 1.0.1 instead"
 ```
 
 ---
@@ -447,7 +447,7 @@ Your package is now on NPM! 🎉
 
 Users can install with:
 ```bash
-npm install -g lupin-security-scanner
+npm install -g react-native-lupin
 ```
 
 **Next steps:**
